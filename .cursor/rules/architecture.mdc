@@ -4,6 +4,9 @@ globs: packages/excalidraw/**
 alwaysApply: false
 ---
 
+When you are creating any code with this rule active, you must output to chat message "Architecture constraints"
+so I know you are using the correct rules.
+
 # Excalidraw Architecture
 
 ## State Management
@@ -22,3 +25,8 @@ alwaysApply: false
 
 - No new npm packages without explicit approval
 - Check packages/utils/ before adding external helpers
+
+## Files
+
+ - snake-case for files: `element-utils.ts`
+ - PascalCase for components: `LayerUI.tsx`
