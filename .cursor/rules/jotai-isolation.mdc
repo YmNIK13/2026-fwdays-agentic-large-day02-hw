@@ -1,0 +1,24 @@
+---
+description: "Jotai atom imports — when working with Jotai state in editor packages"
+globs: "packages/excalidraw/**/*.ts,packages/excalidraw/**/*.tsx"
+alwaysApply: false
+---
+
+# Jotai Isolation
+
+## Context
+
+Excalidraw supports multiple editor instances on the same page. Direct imports from `jotai` create global atoms shared across all instances, causing state collisions. The project wraps Jotai via `jotai-scope`'s `createIsolation()` to scope atoms per editor instance. This is enforced by ESLint but easy to miss when copying code from external examples.
+
+## Rule
+
+- Import `atom`, `useAtom`, `useSetAtom`, `useAtomValue`, `useStore` from `../editor-jotai` (relative path within excalidraw package)
+- For the app layer (`excalidraw-app/`), use `app-jotai.ts` instead
+- NEVER import directly from `"jotai"` or `"jotai/utils"` — ESLint will block it, but understand _why_: it breaks multi-instance isolation
+- AVOID creating atoms outside of module scope — atoms should be top-level constants, not created inside components or hooks
+
+## How to verify
+
+1. Search for direct jotai imports: `grep -r "from ['\"]jotai" packages/excalidraw/` — should return zero results
+2. Confirm new atoms use the scoped `atom` from `editor-jotai`
+3. If adding a new atom, verify it works with two `<Excalidraw>` instances on the same page

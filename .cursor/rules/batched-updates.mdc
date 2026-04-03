@@ -1,0 +1,25 @@
+---
+description: "Batched and throttled React updates — when writing event handlers that trigger state changes"
+globs: "packages/excalidraw/**/*.ts,packages/excalidraw/**/*.tsx"
+alwaysApply: false
+---
+
+# Batched & Throttled React Updates
+
+## Context
+
+Excalidraw handles high-frequency events (pointer move, scroll, resize) that can trigger multiple state updates per frame. Without batching, each `setState` causes a separate re-render. The project provides `withBatchedUpdates` and `withBatchedUpdatesThrottled` wrappers from `reactUtils.ts` that use React's `unstable_batchedUpdates` and `requestAnimationFrame` throttling to coalesce renders.
+
+## Rule
+
+- Wrap event handlers that trigger state changes with `withBatchedUpdates(handler)`
+- For high-frequency events (pointermove, scroll, wheel, resize), use `withBatchedUpdatesThrottled(handler)` to additionally throttle to one execution per animation frame
+- Apply the wrapper at the point of handler assignment, not inside the handler body
+- NEVER call `withBatchedUpdatesThrottled` inside a render function — the throttled wrapper must be stable (create it once, e.g., at module scope or in a ref)
+- AVOID nesting batched wrappers — one layer is sufficient
+
+## How to verify
+
+1. New event handlers on canvas or window use `withBatchedUpdates` or `withBatchedUpdatesThrottled`
+2. No `addEventListener("pointermove", handler)` without throttling — grep for raw pointer event listeners
+3. Throttled handlers are created outside render to maintain referential stability
