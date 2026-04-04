@@ -1,0 +1,31 @@
+---
+description: "Always use Context7 MCP when library or API documentation is needed, especially for setup, installation, configuration, version-specific usage, migration guidance, SDK usage, framework integration, and code generation tasks."
+globs: "**/*"
+alwaysApply: true
+---
+
+When this rule is active, include the exact chat message `Rule active: Context7 MCP` once in your next response. If multiple rules are active, include all applicable rule markers.
+
+# Context7 MCP
+
+## Rule
+
+- Always use `context7-mcp` when library or API documentation is needed
+- Prefer `context7-mcp` over memory for setup, installation, configuration, migrations, framework integration, and code generation tasks
+- Use `context7-mcp` to confirm version-specific behavior before generating code that depends on external libraries or APIs
+- If the task depends on third-party docs, examples, or official API usage, fetch the relevant documentation with `context7-mcp` first
+- If `context7-mcp` does not contain the needed documentation, say that explicitly before falling back to another source or to best-effort reasoning
+
+## When to use
+
+- Installing or configuring libraries, SDKs, frameworks, CLIs, or plugins
+- Looking up official API shapes, parameters, return values, or lifecycle behavior
+- Generating code that depends on library conventions or documented integration steps
+- Checking breaking changes, migrations, or version-specific differences
+- Verifying environment variables, initialization order, provider setup, or auth flows from docs
+
+## How to verify
+
+1. Before answering a library or API docs question, confirm `context7-mcp` was consulted
+2. If generated code depends on a third-party library, confirm the relevant docs or examples were fetched first
+3. If no Context7 docs were available, state that explicitly in the response
