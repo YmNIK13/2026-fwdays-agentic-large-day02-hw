@@ -1,0 +1,26 @@
+---
+description: "Branded types for primitive values — when creating IDs, URLs, or domain-specific strings"
+globs: "packages/**/*.ts,packages/**/*.tsx"
+alwaysApply: false
+---
+
+# Branded Types
+
+## Context
+
+The codebase uses TypeScript intersection types with a `_brand` field to prevent accidental misuse of primitive values. Without this, a `string` representing a `FileId` could be passed where a `SocketId` is expected — the compiler would not catch it. Branded types enforce semantic correctness at the type level with zero runtime cost.
+
+## Rule
+
+- Use branded types for all domain-specific primitives: IDs, URLs, encoded data
+- Pattern: `type MyId = string & { _brand: "MyId" }`
+- Cast raw values explicitly: `const id = "abc" as FileId`
+- NEVER pass a raw `string` where a branded type is expected — always cast
+- NEVER create a new branded type if an equivalent already exists in the codebase (`FileId`, `DataURL`, `SocketId`, etc.)
+- DO NOT add runtime validation to branded types — they are compile-time only
+
+## How to verify
+
+1. Check that new domain-specific string parameters use branded types, not raw `string`
+2. Grep for existing branded types before creating a new one: `grep -r "_brand" packages/`
+3. Ensure no function signature accepts `string` where a branded type is semantically required

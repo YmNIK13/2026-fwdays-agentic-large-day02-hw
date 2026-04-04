@@ -1,0 +1,29 @@
+---
+description: "Action registration pattern — when adding new user-facing actions or state mutations"
+globs: "packages/excalidraw/actions/**/*.ts,packages/excalidraw/actions/**/*.tsx"
+alwaysApply: false
+---
+
+# Action Registration Pattern
+
+## Context
+
+All state mutations go through the ActionManager. Actions are not simple reducers — they combine state logic, UI rendering, analytics, and enable/disable predicates in a single declarative object. New features that modify `AppState` or elements must be implemented as registered actions, not as ad-hoc `setState` calls in components.
+
+## Rule
+
+- Create new actions using the `register()` function from `./register`
+- Every action must return `ActionResult` with a `captureUpdate` field (`CaptureUpdateAction.IMMEDIATELY` for undoable changes, `CaptureUpdateAction.EVENTUALLY` for non-undoable)
+- Return `false` from `perform()` to silently cancel the action — do not throw
+- Use `predicate` to control when the action is available (respect `viewModeEnabled`, feature flags, `UIOptions`)
+- Add `trackEvent` for analytics if the action is user-initiated
+- If the action needs a UI panel, add `PanelComponent` — it will be rendered via `actionManager.renderAction()`
+- NEVER mutate `elements` or `appState` directly inside `perform()` — return new references
+- DO NOT call `setState` or dispatch other actions inside `perform()` — return the new state and let the manager apply it
+
+## How to verify
+
+1. New action files follow naming: `action{FeatureName}.tsx`
+2. Action is registered and appears in the action registry
+3. `captureUpdate` is set correctly (IMMEDIATELY for undoable user actions)
+4. `predicate` respects `viewModeEnabled` when relevant
