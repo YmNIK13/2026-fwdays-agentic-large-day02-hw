@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codebase Explorer"
+  short_description: "Explore unfamiliar code areas and map dependencies"
+  default_prompt: "Use $codebase-explorer to explore an unfamiliar part of the codebase, identify key files, trace data flow, and summarize dependencies without modifying files."
