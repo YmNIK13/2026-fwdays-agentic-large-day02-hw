@@ -4,6 +4,8 @@ globs: "packages/excalidraw/**"
 alwaysApply: true
 ---
 
+When this rule is active, include the exact chat message `Rule active: Protected files` once in your next response. If multiple rules are active, include all applicable rule markers.
+
 # Protected Files
 
 NEVER modify these files without explicit approval:

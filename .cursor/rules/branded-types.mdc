@@ -4,6 +4,8 @@ globs: "packages/**/*.ts,packages/**/*.tsx"
 alwaysApply: false
 ---
 
+When this rule is active, include the exact chat message `Rule active: Branded types` once in your next response. If multiple rules are active, include all applicable rule markers.
+
 # Branded Types
 
 ## Context

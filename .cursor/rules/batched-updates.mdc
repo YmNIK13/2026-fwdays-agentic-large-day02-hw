@@ -4,6 +4,8 @@ globs: "packages/excalidraw/**/*.ts,packages/excalidraw/**/*.tsx"
 alwaysApply: false
 ---
 
+When this rule is active, include the exact chat message `Rule active: Batched and throttled React updates` once in your next response. If multiple rules are active, include all applicable rule markers.
+
 # Batched & Throttled React Updates
 
 ## Context
