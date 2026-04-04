@@ -1,52 +1,76 @@
 # AGENTS.md
 
-## Project Structure
+## Project Overview
 
-Excalidraw is a **monorepo** with a clear separation between the core library and the application:
+- Excalidraw is a layered monorepo with a publishable editor package, a reference web app, and integration examples.
+- Keep this file operational and checklist-friendly. General project context belongs in Memory Bank and deep docs, not in long narrative sections here.
 
-- **`packages/excalidraw/`** - Main React component library published to npm as `@excalidraw/excalidraw`
-- **`excalidraw-app/`** - Full-featured web application (excalidraw.com) that uses the library
-- **`packages/`** - Core packages: `@excalidraw/common`, `@excalidraw/element`, `@excalidraw/math`, `@excalidraw/utils`
-- **`examples/`** - Integration examples (NextJS, browser script)
+## Memory Bank
 
-## Development Workflow
+- Read every Markdown file in `docs/memory-bank/` at the start of every task:
+- `projectbrief.md`
+- `productContext.md`
+- `activeContext.md`
+- `systemPatterns.md`
+- `techContext.md`
+- `progress.md`
+- `decisinLog.md`
+- Treat Memory Bank as the canonical source for stable repo context, current focus, and durable decisions.
+- Use `docs/technical/*` and `docs/product/*` for deep detail instead of duplicating that material in `AGENTS.md`.
 
-1. **Package Development**: Work in `packages/*` for editor features
-2. **App Development**: Work in `excalidraw-app/` for app-specific features
-3. **Testing**: Always run `yarn test:update` before committing
-4. **Type Safety**: Use `yarn test:typecheck` to verify TypeScript
+## Project Layout
 
-## Development Commands
+- `packages/excalidraw/`: published `@excalidraw/excalidraw` React editor package.
+- `excalidraw-app/`: reference application and app-only integrations.
+- `packages/common`, `packages/math`, `packages/element`, `packages/utils`: shared primitives and helpers.
+- `examples/*`: integration examples for embedders.
 
-```bash
-yarn test:typecheck  # TypeScript type checking
-yarn test:update     # Run all tests (with snapshot updates)
-yarn fix             # Auto-fix formatting and linting issues
-```
+## Tech Stack
 
-## Architecture Notes
+- Node `>=18.0.0` and Yarn `1.22.22` workspaces.
+- TypeScript with strict checking.
+- Vite and Vitest toolchain.
+- React `19` in `excalidraw-app`; the published package preserves compatibility across React `17`, `18`, and `19`.
+- Browser-first runtime, with some advanced app features depending on external services.
 
-### Package System
+## Key Commands
 
-- Uses Yarn workspaces for monorepo management
-- Internal packages use path aliases (see `vitest.config.mts`)
-- Build system uses esbuild for packages, Vite for the app
-- TypeScript throughout with strict configuration
+- `yarn`: install workspace dependencies.
+- `yarn start`: run the reference app locally.
+- `yarn build`: build the app.
+- `yarn build:packages`: build publishable packages.
+- `yarn test:typecheck`: run TypeScript checks.
+- `yarn test:update`: repo-preferred test run with snapshot updates.
+- `yarn test:all`: full verification sweep.
+- `yarn fix`: run formatting and lint autofixes.
 
-## Rules & Memory
+## Conventions
 
-### Cursor Rules
+- Work in `packages/*` for editor/runtime changes and in `excalidraw-app/` for app-specific behavior.
+- Read the relevant `.cursor/rules/*.mdc` files before editing code in their scope.
+- Preserve architecture constraints: state changes go through `actionManager.dispatch()`, rendering stays on the canvas pipeline, and new drawing/state libraries require explicit approval.
+- Follow code conventions: functional components, named exports, `import type` for type-only imports, no `any`, and no `@ts-ignore`.
+- Reuse existing project patterns for actions, branded types, Jotai isolation, batched updates, and security-sensitive flows.
 
-`.cursor/rules/` — правила для AI-агентів у форматі `.mdc`:
+## Do-Not-Touch
 
-- `architecture.mdc` — архітектурні обмеження (state management, rendering, залежності)
-- `conventions.mdc` — конвенції коду (компоненти, TypeScript, файли)
-- `do-not-touch.mdc` — захищені файли, які не можна змінювати без явного дозволу
-- `action-registration.mdc` — паттерн реєстрації actions через `register()`
-- `branded-types.mdc` — branded types для типобезпечних примітивів
-- `jotai-isolation.mdc` — ізольований імпорт Jotai через `editor-jotai`
-- `batched-updates.mdc` — batched/throttled обгортки для event handlers
+- Do not modify these files without explicit approval:
+- `packages/excalidraw/scene/renderer.ts`
+- `packages/excalidraw/data/restore.ts`
+- `packages/excalidraw/actions/manager.ts`
+- `packages/excalidraw/types.ts`
+- If a protected file must change, first map dependencies and call sites, then run the full test suite, then do manual QA.
 
-### Memory Bank
+## Verification
 
-Проєкт використовує persistent memory bank для Claude Code. Файли зберігаються у `.claude/projects/` і містять контекст між сесіями: інформацію про користувача, зворотний зв'язок, проєктні рішення та посилання на зовнішні ресурси. Індекс — `MEMORY.md`.
+- Default after code changes: `yarn test:typecheck`.
+- Standard repo expectation before commit: `yarn test:update`.
+- Use `yarn test:all` for broad, shared, or runtime-sensitive changes.
+- Run `yarn fix` when formatting or lint issues are likely.
+- Docs-only changes do not require code tests, but the final handoff should say that verification was not run.
+
+## Skills And Deep Docs
+
+- Use the relevant local skill when the task matches it, especially `codebase-explorer`, `build-verify`, `memory-bank-update`, `undocumented-behavior-finder`, and `technical-docs-writer`.
+- Use `docs/technical/architecture.md`, `docs/technical/packages-architecture.md`, `docs/technical/hidden-invariants.md`, and `docs/technical/dev-setup.md` for source-grounded technical detail.
+- Use `docs/product/*` when the task depends on product behavior, domain language, or UX expectations.

@@ -30,3 +30,10 @@ so I know you are using the correct rules.
 
  - snake-case for files: `element-utils.ts`
  - PascalCase for components: `LayerUI.tsx`
+
+## How to verify
+
+1. Confirm touched editor state changes still flow through `actionManager.dispatch()` and `AppState`, not Redux/Zustand/MobX or ad-hoc stores
+2. Confirm rendering changes still go through the canvas pipeline (`Scene` -> `renderScene()` -> canvas context), not React DOM drawing
+3. Confirm no new drawing/runtime dependencies such as `react-konva`, `fabric.js`, or `pixi.js` were introduced
+4. Confirm new file names stay snake-case and React component files stay PascalCase

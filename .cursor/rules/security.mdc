@@ -1,6 +1,6 @@
 ---
 description: "Security guardrails for untrusted input, URLs, messaging, storage, secrets, privacy, and secure integrations. Use when the user asks to analyze, audit, review, harden, verify, or confirm that a module, package, feature, component, file, import/export flow, API integration, iframe/embed, or storage path is secure or safe, including utility packages such as `@excalidraw/math` (`packages/math`). Trigger for English or Ukrainian prompts such as: security review, security audit, is this module safe, analyze module security, проаналізуй модуль на безпеку, перевір модуль на безпеку, переконайся що модуль безпечний, чи безпечний цей модуль. Also use when looking for vulnerabilities, attack surface, XSS, secret leakage, token handling issues, unsafe storage, origin validation problems, privacy/data exposure, unsafe dependencies, or other security risks."
-globs: "packages/**,packages/**/*.ts,packages/**/*.tsx,packages/**/*.js,packages/**/*.jsx,packages/**/*.mts,packages/**/*.cts,packages/**/*.mjs,packages/**/*.cjs,packages/**/*.html,packages/**/*.json,packages/**/*.md,excalidraw-app/**,excalidraw-app/**/*.ts,excalidraw-app/**/*.tsx,excalidraw-app/**/*.js,excalidraw-app/**/*.jsx,excalidraw-app/**/*.mts,excalidraw-app/**/*.cts,excalidraw-app/**/*.mjs,excalidraw-app/**/*.cjs,excalidraw-app/**/*.html,excalidraw-app/**/*.json,excalidraw-app/**/*.md"
+globs: "packages/**"
 alwaysApply: false
 ---
 

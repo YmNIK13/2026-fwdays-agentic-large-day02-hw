@@ -1,7 +1,7 @@
 ---
 description: "Always use Context7 MCP when library or API documentation is needed, especially for setup, installation, configuration, version-specific usage, migration guidance, SDK usage, framework integration, and code generation tasks."
 globs: "**/*"
-alwaysApply: true
+alwaysApply: false
 ---
 
 When this rule is active, include the exact chat message `Rule active: Context7 MCP` once in your next response. If multiple rules are active, include all applicable rule markers.

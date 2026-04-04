@@ -25,3 +25,11 @@ When this rule is active, include the exact chat message `Rule active: Code conv
 
 - kebab-case for files: `element-utils.ts`
 - PascalCase for components: `LayerUI.tsx`
+
+## How to verify
+
+1. Confirm new React components are function components and use named exports only
+2. Confirm component props types follow the `{ComponentName}Props` naming pattern
+3. Confirm touched TypeScript code does not introduce `any` or `@ts-ignore`
+4. Confirm type-only imports use `import type` and simple aliases prefer `type` over `interface`
+5. Confirm tests stay colocated with components and file names follow the documented casing rules
