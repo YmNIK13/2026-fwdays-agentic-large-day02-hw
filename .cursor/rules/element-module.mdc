@@ -1,0 +1,32 @@
+---
+description: "Element package invariants for scene mutations, ordering, bindings, and geometry"
+globs: "packages/element/*.ts,packages/element/*.tsx,packages/element/**/*.ts,packages/element/**/*.tsx"
+alwaysApply: false
+---
+
+# Element Module Invariants
+
+## Context
+
+`packages/element` is the element model and geometry core for Excalidraw. It owns JSON-serializable element data, scene ordering, binding relationships, bound text layout, shape cache invalidation, and delta/store logic. Small ad-hoc changes here often break collaboration, undo/redo, rendering caches, or selection behavior.
+
+## Rule
+
+- Treat `ExcalidrawElement` as serializable data only; NEVER attach DOM nodes, canvas handles, computed caches, app instances, or other runtime-only state to element objects
+- Create and clone elements via `newElement*()`, `newElementWith()`, or existing copy helpers; DO NOT hand-roll full element objects or partial clones
+- Mutate scene-owned elements through `scene.mutateElement()`; use low-level `mutateElement()` only inside element/package internals that already manage scene updates
+- NEVER assign element fields directly (`element.x = ...`, `element.index = ...`, etc.); `mutateElement()` and `newElementWith()` keep `version`, `versionNonce`, `updated`, elbow-arrow normalization, and `ShapeCache` invalidation in sync
+- Keep array order and fractional indices aligned with `syncMovedIndices()` or `syncInvalidIndices()` after inserts, deletes, or reorder operations; DO NOT write `index` manually
+- When changing containers, arrows, resize/transform flows, or text layout, preserve secondary invariants with the existing helpers: `updateBoundElements()`, `bindBindingElement()`, `unbindBindingElement()`, `redrawTextBoundingBox()`, `handleBindTextResize()`
+- Respect bound-text rules: text positioning is derived, bound text ordering must remain after its container, and arrow-bound text angle must remain `0`
+- Prefer existing geometry and hit-test helpers from `bounds.ts`, `collision.ts`, `distance.ts`, `LinearElementEditor`, `transformHandles.ts`, and `typeChecks.ts`; DO NOT reimplement shape math unless the shared helper is demonstrably insufficient
+- For scene-wide edits, use `Scene` APIs such as `replaceAllElements()`, `insertElement()`, `insertElements()`, or `mapElements()` so caches, maps, frame lists, selection cache, and `sceneNonce` remain valid
+- When touching `store.ts` or `delta.ts`, preserve the distinction between durable vs ephemeral updates and keep undo/redo and reconciliation behavior source-compatible
+
+## How to verify
+
+1. Search for direct element property writes in the changed code; replace them with `scene.mutateElement()`, `mutateElement()`, or `newElementWith()`
+2. Search for manual `index` writes or reorder logic; ensure it goes through `syncMovedIndices()` or `syncInvalidIndices()`
+3. If a change affects containers, arrows, text, resize, or transform, confirm bound text and bindings are updated via the existing helpers
+4. If a change affects scene replacement or batch edits, confirm it uses `Scene` APIs and does not bypass scene caches
+5. Add or update focused tests in `packages/element/tests/` or `packages/element/src/__tests__/` for bindings, ordering, text layout, resize/transform, or delta/store behavior

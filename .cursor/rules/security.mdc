@@ -1,0 +1,32 @@
+---
+description: "Security guardrails for untrusted input, URLs, messaging, storage, and secrets"
+globs: "packages/**/*.ts,packages/**/*.tsx,packages/**/*.js,packages/**/*.jsx,packages/**/*.mts,excalidraw-app/**/*.ts,excalidraw-app/**/*.tsx,excalidraw-app/**/*.js,excalidraw-app/**/*.jsx,excalidraw-app/**/*.mts,excalidraw-app/**/*.html"
+alwaysApply: false
+---
+
+# Security Rules
+
+## Context
+
+Excalidraw handles untrusted scene data, clipboard payloads, URLs, iframe messages, and remote responses. Security regressions here usually come from treating external input as trusted, skipping URL sanitization, leaking keys into client storage, or weakening origin checks.
+
+## Rule
+
+- Treat imported files, clipboard data, URL params, hash fragments, `postMessage` payloads, and backend responses as untrusted input
+- Sanitize links with `normalizeLink()` or `toValidURL()` from `packages/common/src/url.ts`; NEVER pass raw user strings into `href`, `src`, iframe URLs, or `window.open()`
+- AVOID new uses of `dangerouslySetInnerHTML`, raw `innerHTML`, `eval`, or `new Function`; if extending an existing trusted SVG/HTML flow, keep the source internal and document the trust boundary
+- For `postMessage` and iframe integrations, validate `event.origin`, validate the message shape, and reply with an exact `targetOrigin`; NEVER use `"*"`
+- Reuse existing encryption helpers from `@excalidraw/excalidraw/data/encryption` for scene or file transport; DO NOT add custom crypto, token encoding, or reversible obfuscation
+- DO NOT store JWTs, room keys, encryption keys, access tokens, or credentials in `localStorage`, `sessionStorage`, IndexedDB, analytics payloads, Sentry extras, or console logs
+- Treat `import.meta.env.VITE_*` as public client config; NEVER put secrets there and NEVER log the raw values of security-sensitive env vars
+- Keep collaboration and export keys in the existing approved flows only; DO NOT introduce new query-param, localStorage, or server echo paths for secret material without explicit approval
+- For external links opened in a new tab, preserve opener isolation with `rel="noopener"` or `rel="noreferrer"` and equivalent safeguards for `window.open()`
+- Fail closed on invalid or unverifiable data: abort, return `about:blank`, or surface a controlled error instead of rendering or executing partially trusted content
+
+## How to verify
+
+1. Search for raw security sinks: `dangerouslySetInnerHTML`, `innerHTML`, `eval(`, `new Function`, `postMessage`, `window.open`, `target="_blank"`
+2. Confirm new URL handling goes through `normalizeLink()` or `toValidURL()`
+3. Confirm message handlers reject unexpected origins and send replies with an exact `targetOrigin`
+4. Confirm no new secret-like values are written to browser storage, logs, analytics, or client env vars
+5. Add or update tests when changing sanitization, origin checks, encryption, import/export parsing, or storage of sensitive data
