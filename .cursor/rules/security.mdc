@@ -1,6 +1,6 @@
 ---
-description: "Security guardrails for untrusted input, URLs, messaging, storage, and secrets"
-globs: "packages/**/*.ts,packages/**/*.tsx,packages/**/*.js,packages/**/*.jsx,packages/**/*.mts,excalidraw-app/**/*.ts,excalidraw-app/**/*.tsx,excalidraw-app/**/*.js,excalidraw-app/**/*.jsx,excalidraw-app/**/*.mts,excalidraw-app/**/*.html"
+description: "Security guardrails for untrusted input, URLs, messaging, storage, secrets, privacy, and secure integrations. Use when the user asks to analyze, audit, review, harden, verify, or confirm that a module, package, feature, component, file, import/export flow, API integration, iframe/embed, or storage path is secure or safe, including utility packages such as `@excalidraw/math` (`packages/math`). Trigger for English or Ukrainian prompts such as: security review, security audit, is this module safe, analyze module security, проаналізуй модуль на безпеку, перевір модуль на безпеку, переконайся що модуль безпечний, чи безпечний цей модуль. Also use when looking for vulnerabilities, attack surface, XSS, secret leakage, token handling issues, unsafe storage, origin validation problems, privacy/data exposure, unsafe dependencies, or other security risks."
+globs: "packages/**,packages/**/*.ts,packages/**/*.tsx,packages/**/*.js,packages/**/*.jsx,packages/**/*.mts,packages/**/*.cts,packages/**/*.mjs,packages/**/*.cjs,packages/**/*.html,packages/**/*.json,packages/**/*.md,excalidraw-app/**,excalidraw-app/**/*.ts,excalidraw-app/**/*.tsx,excalidraw-app/**/*.js,excalidraw-app/**/*.jsx,excalidraw-app/**/*.mts,excalidraw-app/**/*.cts,excalidraw-app/**/*.mjs,excalidraw-app/**/*.cjs,excalidraw-app/**/*.html,excalidraw-app/**/*.json,excalidraw-app/**/*.md"
 alwaysApply: false
 ---
 
@@ -12,6 +12,8 @@ When this rule is active, include the exact chat message `Rule active: Security 
 
 Excalidraw handles untrusted scene data, clipboard payloads, URLs, iframe messages, and remote responses. Security regressions here usually come from treating external input as trusted, skipping URL sanitization, leaking keys into client storage, or weakening origin checks.
 
+Apply this rule both when changing code and when auditing existing code for safety.
+
 ## Rule
 
 - Treat imported files, clipboard data, URL params, hash fragments, `postMessage` payloads, and backend responses as untrusted input
@@ -22,6 +24,8 @@ Excalidraw handles untrusted scene data, clipboard payloads, URLs, iframe messag
 - DO NOT store JWTs, room keys, encryption keys, access tokens, or credentials in `localStorage`, `sessionStorage`, IndexedDB, analytics payloads, Sentry extras, or console logs
 - Treat `import.meta.env.VITE_*` as public client config; NEVER put secrets there and NEVER log the raw values of security-sensitive env vars
 - Keep collaboration and export keys in the existing approved flows only; DO NOT introduce new query-param, localStorage, or server echo paths for secret material without explicit approval
+- Review clipboard, import/export, file handling, and third-party embed flows for data exfiltration, unsafe parsing, permissive sandboxing, or trust-boundary mistakes
+- Check privacy and telemetry exposure: avoid leaking user content, scene data, tokens, keys, or sensitive metadata into error reporting, analytics, debug output, or shareable URLs
 - For external links opened in a new tab, preserve opener isolation with `rel="noopener"` or `rel="noreferrer"` and equivalent safeguards for `window.open()`
 - Fail closed on invalid or unverifiable data: abort, return `about:blank`, or surface a controlled error instead of rendering or executing partially trusted content
 
@@ -31,4 +35,5 @@ Excalidraw handles untrusted scene data, clipboard payloads, URLs, iframe messag
 2. Confirm new URL handling goes through `normalizeLink()` or `toValidURL()`
 3. Confirm message handlers reject unexpected origins and send replies with an exact `targetOrigin`
 4. Confirm no new secret-like values are written to browser storage, logs, analytics, or client env vars
-5. Add or update tests when changing sanitization, origin checks, encryption, import/export parsing, or storage of sensitive data
+5. Confirm file/import/export and embed flows keep strict validation, trusted-domain checks, and safe sandbox/origin behavior
+6. Add or update tests when changing sanitization, origin checks, encryption, import/export parsing, or storage of sensitive data
